@@ -1,6 +1,7 @@
 const Cart = require('../model/Cart');
 const {Validator} = require('node-input-validator');
 
+/** @Cart listing method */
 const index = async(req,res) =>{
     try{
         
@@ -15,6 +16,7 @@ const index = async(req,res) =>{
     }
 }
 
+/** @Cart create method */
 const create = async(req,res) =>{
     try{
         let requestData = req.body;
@@ -55,6 +57,7 @@ const create = async(req,res) =>{
     }
 }
 
+/** @Cart update cart record based on cart_id method */
 const updateCartQuantity = async(req,res) =>{
     try{
         let cart_id =req.params.cart_id;
@@ -79,7 +82,7 @@ const updateCartQuantity = async(req,res) =>{
     }
 }
 
-
+/** @Cart delete method delete cart based on cart_id */
 const deleteCart = async(req,res) =>{
     try{
         let cart_id = req.params.cart_id;
@@ -90,6 +93,7 @@ const deleteCart = async(req,res) =>{
     }
 }
 
+/** Exported all the method of cart controller */
 module.exports={
     index,
     create,

@@ -1,6 +1,6 @@
 const {Model} =require('objection');
 
-
+/**Database connection using knex js */
 const knex = require('knex')({
     client: 'mysql2',
     connection: {

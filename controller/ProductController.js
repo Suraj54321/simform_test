@@ -1,13 +1,18 @@
 const Product = require('../model/Product');
 const {Validator} = require('node-input-validator');
+const path = require('path');
+const uploadLocalPath=path.join(__dirname,'../') +'public/product/';
+const helper = require('../helpers/helper');
 
+/** @Product listing method */
 const index = async(req,res) =>{
     try{
+        
         let queryParams={
             pageNumber:req.body.page_number ? req.body.page_number : 1,
             limit:req.body.limit ? req.body.limit : 10
         }
-        let productData=await Product.query().page(queryParams);
+        let productData=await Product.query().withGraphFetched('[category]').page(queryParams);
         res.send({status:200,message:"Product listed successfully",data:productData})
     
     }catch(err){
@@ -15,6 +20,7 @@ const index = async(req,res) =>{
     }
 }
 
+/** @Product create method */
 const create = async(req,res) =>{
     try{
         let requestData = req.body;
@@ -33,6 +39,12 @@ const create = async(req,res) =>{
         });
 
         let dataStored = await Product.query().insert(v.inputs);
+       
+        let response =helper.uploadImageLocal(req,res,uploadLocalPath,dataStored.id)
+        if(response != 'undefine')
+        {
+            await Product.query().where({id:dataStored.id}).update({image:response})
+        }
 
         if(dataStored != undefined || dataStored != null){
             res.send({status:200,message:"Product created successfully",data:[]})
@@ -44,6 +56,7 @@ const create = async(req,res) =>{
     }
 }
 
+/** @Product update based on product_id */
 const update = async(req,res) =>{
     try{
         let product_id = req.params.product_id;
@@ -68,7 +81,13 @@ const update = async(req,res) =>{
             }
         });
 
-         await Product.query().where('id',product_id).update(v.inputs);
+        let imageNameForUnlink =await Product.query().where('id',product_id).first();
+         let response =helper.uploadImageLocal(req,res,uploadLocalPath,product_id,'update',imageNameForUnlink.image ? imageNameForUnlink.image : 0)
+         let dataToUpdate={
+            name:requestData.name,
+            image:response
+         }
+         await Product.query().where('id',product_id).update(dataToUpdate);
         res.send({status:200,message:"Category updated successfully",data:[]})
         
 
@@ -78,6 +97,7 @@ const update = async(req,res) =>{
     }
 }
 
+/** @Product delete based on product_id */
 const deleteProduct = async(req,res) =>{
     try{
         let product_id = req.params.product_id;
@@ -88,6 +108,7 @@ const deleteProduct = async(req,res) =>{
     }
 }
 
+/** Exported all the method of product controller */
 module.exports={
     index,
     create,

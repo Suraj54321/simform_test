@@ -3,6 +3,7 @@ const {Validator} = require('node-input-validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+/**@User Registration function */
 const register = async(req,res) =>{
     try{
         let requestData = req.body;
@@ -47,7 +48,7 @@ const register = async(req,res) =>{
     }
 }
 
-
+/**@User Login function */
 const login = async(req,res) =>{
     try{
 
@@ -78,6 +79,8 @@ const login = async(req,res) =>{
         console.log(err);
     }
 }
+
+/**Exporting Auth Controller functions for global use */
 
 module.exports={
     login,
